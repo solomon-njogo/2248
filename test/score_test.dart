@@ -55,7 +55,7 @@ void main() {
     expect(report?.rawSum, 4);
     expect(report?.result, 4);
     expect(engine.score, 4);
-    expect(engine.tileAt(const Cell(2, 1)), 4);
+    expect(engine.tileAt(const Cell(2, 8)), 4);
   });
 
   test('2 + 2 + 4 adds 8 while the head becomes 8', () {
@@ -73,7 +73,7 @@ void main() {
     expect(report?.rawSum, 8);
     expect(report?.result, 8);
     expect(engine.score, 8);
-    expect(engine.tileAt(const Cell(3, 1)), 8);
+    expect(engine.tileAt(const Cell(3, 8)), 8);
   });
 
   test('forty 2s add 80 while the head becomes 128', () {
@@ -167,19 +167,21 @@ void main() {
 
   test('a refused seed leaves the score unchanged', () {
     final engine = ResolveEngine();
-    engine.place(const [
-      Placement(1, 1, 2),
-      Placement(2, 1, 2),
-      Placement(1, 3, 2),
-      Placement(2, 3, 4),
-    ]);
+    engine.place(
+      _boardWith({
+        const Cell(1, 1): 2,
+        const Cell(2, 1): 2,
+        const Cell(1, 3): 2,
+        const Cell(2, 3): 8,
+      }),
+    );
     engine.seed(const Cell(1, 1), const Cell(2, 1));
     engine.resolve();
     expect(engine.score, 4);
 
     expect(engine.seed(const Cell(1, 3), const Cell(2, 3)), isFalse);
     expect(engine.score, 4);
-    expect(engine.seed(const Cell(1, 1), const Cell(1, 3)), isFalse);
+    expect(engine.seed(const Cell(1, 3), const Cell(1, 5)), isFalse);
     expect(engine.score, 4);
   });
 
@@ -220,12 +222,14 @@ void main() {
     'a new seed that replaces an uncommitted chain leaves the score unchanged',
     () {
       final engine = ResolveEngine();
-      engine.place(const [
-        Placement(1, 1, 2),
-        Placement(2, 1, 2),
-        Placement(4, 4, 8),
-        Placement(5, 5, 8),
-      ]);
+      engine.place(
+        _boardWith({
+          const Cell(1, 1): 2,
+          const Cell(2, 1): 2,
+          const Cell(4, 4): 8,
+          const Cell(5, 5): 8,
+        }),
+      );
       engine.seed(const Cell(1, 1), const Cell(2, 1));
       engine.resolve();
       expect(engine.score, 4);
@@ -292,15 +296,15 @@ void main() {
     engine.place(const [
       Placement(1, 1, 1073741824),
       Placement(2, 1, 1073741824),
-      Placement(4, 1, 1073741824),
-      Placement(5, 1, 1073741824),
+      Placement(4, 8, 1073741824),
+      Placement(5, 8, 1073741824),
     ]);
     engine.seed(const Cell(1, 1), const Cell(2, 1));
     expect(engine.score, 0);
     expect(engine.resolve()?.rawSum, 2147483648);
     expect(engine.score, 2147483648);
 
-    engine.seed(const Cell(4, 1), const Cell(5, 1));
+    engine.seed(const Cell(4, 8), const Cell(5, 8));
     expect(engine.score, 2147483648);
     expect(engine.resolve()?.rawSum, 2147483648);
     expect(engine.score, 4294967296);
@@ -328,4 +332,10 @@ void _play(ResolveEngine engine, List<Cell> cells) {
 List<Placement> _filled(int tile) => [
   for (var row = 1; row <= 8; row++)
     for (var column = 1; column <= 5; column++) Placement(column, row, tile),
+];
+
+List<Placement> _boardWith(Map<Cell, int> tiles, {int fill = 4}) => [
+  for (var row = 1; row <= 8; row++)
+    for (var column = 1; column <= 5; column++)
+      Placement(column, row, tiles[Cell(column, row)] ?? fill),
 ];

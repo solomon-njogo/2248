@@ -44,9 +44,25 @@ class ResolveEngine {
 
   final Map<Cell, int> _tiles = {};
   final List<Cell> _chain = [];
+  final List<int> _script;
+  final List<int> _cleared = [];
+  final Random _random = Random();
+  var _scriptCursor = 0;
   int _score = 0;
 
   int get score => _score;
+
+  List<int> get supply {
+    final values = <int>[];
+    var value = 2;
+    while (values.length < 3) {
+      if (!_cleared.contains(value)) values.add(value);
+      value *= 2;
+    }
+    return List.unmodifiable(values);
+  }
+
+  List<int> get cleared => List.unmodifiable(_cleared);
 
   bool place(List<Placement> placements) {
     final next = <Cell, int>{};
@@ -101,7 +117,10 @@ class ResolveEngine {
       }
     }
     _chain.clear();
+    _clearCrossed(result);
     _score += rawSum;
+    _fall();
+    _refill();
     return ResolveReport(rawSum: rawSum, result: result, head: head);
   }
 
@@ -176,6 +195,17 @@ class ResolveEngine {
 }
 
 bool _isTile(int tile) => tile >= 2 && tile & (tile - 1) == 0;
+
+int? _exponent(int value) {
+  if (value < 2 || value & (value - 1) != 0) return null;
+  var exponent = 0;
+  var power = 1;
+  while (power < value) {
+    power *= 2;
+    exponent++;
+  }
+  return exponent;
+}
 
 int _smallestPowerOfTwoAtLeast(int sum) {
   var power = 1;
