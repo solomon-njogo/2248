@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 enum CueKind { step, resolve, clear, refresh, abandon }
@@ -52,6 +52,54 @@ class Cue {
       'Cue(${kind.name}, midi: $midi, tone: $tone, haptic: $haptic)';
 }
 
+class Pulse {
+  const Pulse(this.millis, this.amplitude);
+
+  final int millis;
+  final int amplitude;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Pulse && other.millis == millis && other.amplitude == amplitude;
+
+  @override
+  int get hashCode => Object.hash(millis, amplitude);
+}
+
+abstract class Motor {
+  void pulse(Pulse pulse);
+}
+
+abstract class Impacts {
+  void light();
+
+  void medium();
+}
+
+class ChannelMotor implements Motor {
+  const ChannelMotor();
+
+  static const _channel = MethodChannel('com.game2248.remastered/motor');
+
+  @override
+  void pulse(Pulse pulse) {
+    _channel.invokeMethod<void>('pulse', {
+      'millis': pulse.millis,
+      'amplitude': pulse.amplitude,
+    });
+  }
+}
+
+class FlutterImpacts implements Impacts {
+  const FlutterImpacts();
+
+  @override
+  void light() => HapticFeedback.lightImpact();
+
+  @override
+  void medium() => HapticFeedback.mediumImpact();
+}
+
 abstract class Cues {
   void play(Cue cue);
 
@@ -80,27 +128,44 @@ int pitchOf(int value) {
 }
 
 class PlatformCues implements Cues {
-  PlatformCues() : _player = AudioPlayer();
+  PlatformCues({
+    Motor? motor,
+    Impacts? impacts,
+    TargetPlatform? platform,
+    AudioPlayer? player,
+  }) : _motor = motor ?? const ChannelMotor(),
+       _impacts = impacts ?? const FlutterImpacts(),
+       _platform = platform ?? defaultTargetPlatform,
+       _player = player;
 
-  final AudioPlayer _player;
+  final Motor _motor;
+  final Impacts _impacts;
+  final TargetPlatform _platform;
+  AudioPlayer? _player;
 
   @override
   void play(Cue cue) {
-    if (cue.haptic) {
+    if (cue.haptic && _platform == TargetPlatform.android) {
+      _motor.pulse(
+        cue.kind == CueKind.resolve
+            ? const Pulse(80, 255)
+            : const Pulse(40, 128),
+      );
+    } else if (cue.haptic && _platform == TargetPlatform.iOS) {
       if (cue.kind == CueKind.resolve) {
-        HapticFeedback.mediumImpact();
+        _impacts.medium();
       } else {
-        HapticFeedback.lightImpact();
+        _impacts.light();
       }
     }
     if (!cue.tone) return;
-    final bytes = _tone(cue);
-    _player.play(BytesSource(bytes));
+    final player = _player ??= AudioPlayer();
+    player.play(BytesSource(_tone(cue)));
   }
 
   @override
   void dispose() {
-    _player.dispose();
+    _player?.dispose();
   }
 
   Uint8List _tone(Cue cue) {
