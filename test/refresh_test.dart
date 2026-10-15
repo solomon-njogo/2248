@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_2248/resolve/resolve_engine.dart';
 
 void main() {
-  test('a pairless refill keeps the one highest tile at column 3, row 4', () {
+  test('a pairless refresh keeps the one highest tile at column 3, row 4', () {
     final engine = ResolveEngine(
       script: [8, ...List.filled(39, 2), ...List.filled(39, 4)],
     );
