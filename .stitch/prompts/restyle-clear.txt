@@ -1,0 +1,7 @@
+Restyle this Clear screen to a lively casual phone puzzle on a deep navy field. Keep every number, label, and board position. Change only the look.
+
+LOOK: Full-screen night navy. Tiles are saturated rounded squares with bold white numerals. Color by value: 4 orange, 8 gold, 16 green, 1024 lemon with dark numerals. An 8px gap. Empty cells are darker navy wells where the 2s were cleared. Row 8 is a slightly darker floor band.
+
+KEEP: Wordmark 2248. Score chip 4096. Supply tiles 4, 8, and 16. The 1024 sits at column 3 row 4. Footnote: 1024 clears every 2. Cleared tiles add nothing to the score. The only control is the text button Abandon. No hamburger, no bottom navigation.
+
+DO NOT ADD: gems, a level, a goal bar, crowns, a hammer, undo, pause, Play Scores Rules tabs, or letter suffixes on numbers.

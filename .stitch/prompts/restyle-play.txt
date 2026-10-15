@@ -1,0 +1,9 @@
+Restyle this Play screen to a lively casual phone puzzle on a deep navy field. Keep every number, label, and board position. Change only the look.
+
+LOOK: Full-screen night navy. Tiles are saturated rounded squares with bold white numerals and a soft top highlight. Color by value: 2 coral, 4 orange, 8 gold, and higher powers green, teal, blue, or violet. An 8px gap between tiles. Empty cells are darker navy wells. Row 8, the floor, is a slightly darker band.
+
+CHAIN: The open chain tiles turn violet with a white rim, joined by a thick white connector through their centers, including the diagonal step. Seed is the pair of 2s at column 1 row 4 and column 2 row 5. Next step is the 4 at column 2 row 6. Head is the 8 at column 3 row 6.
+
+KEEP: Wordmark 2248 at the left. Score chip 186 at the right. Supply label with exactly three tiles, 2, 4, and 8, in their value colors. The same 5 by 8 fill. Readout Sum 16. A quiet text button Abandon under the board.
+
+DO NOT ADD: gems, a level, a goal bar, crowns, a hammer, undo, pause, a bottom toolbar, letter suffixes on numbers, or a 4 by 4 or 6 column board.

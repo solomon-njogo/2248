@@ -1,0 +1,7 @@
+Restyle this Refresh screen to a lively casual phone puzzle on a deep navy field. Keep every number, label, and board position. Change only the look.
+
+LOOK: Full-screen night navy, portrait. Tiles are saturated rounded squares with bold white numerals. Color by value: 2 coral, 4 orange, 8 gold, 512 amber. An 8px gap. The board is full. Row 8 is a slightly darker floor band. The 512 at column 3 row 4 keeps the amber fill and has no crown.
+
+KEEP: Wordmark 2248. Score chip 2480. The line: Refresh. The score stays. One 512 is kept at column 3, row 4. Supply tiles 2, 4, and 8. The neighboring pair of 4s stays on row 1. Quiet text button Abandon. No new-game button.
+
+DO NOT ADD: gems, a level, a goal bar, crowns, a hammer, undo, pause, a bottom toolbar, or letter suffixes on numbers.

@@ -1,0 +1,5 @@
+Make this Play screen much more colorful. Spread every tile hue as far from its neighbors as possible. 2 is magenta, 4 is cyan, 8 is lime, with dark numerals on the lime tiles. The background is a vivid indigo-to-plum-to-teal gradient, not a flat navy. The score chip and the supply tray have a bright magenta-to-cyan rim.
+
+The open chain tiles turn electric violet with a white rim and a thick white connector, including the diagonal step. Seed is the pair of 2s at column 1 row 4 and column 2 row 5. Next step is the 4 at column 2 row 6. Head is the 8 at column 3 row 6.
+
+Keep the wordmark 2248, score 186, supply tiles 2 4 8, the same 5 by 8 fill, the readout Sum 16, and the text button Abandon. Do not add gems, a level, a goal bar, crowns, a hammer, undo, pause, or letter suffixes.

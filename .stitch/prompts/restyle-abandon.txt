@@ -1,0 +1,7 @@
+Restyle this Abandon screen to a lively casual phone puzzle on a deep navy field. Keep the copy. Change only the look.
+
+LOOK: The board behind the dialog is dimmed night navy, with saturated rounded tiles and bold white numerals colored by value. The dialog is a rounded navy card, not paper and not glass. Title in white: Abandon this run? Body in mist: The board, the score, and every clear are discarded. Top button is coral with white text: Abandon. Bottom button is a white outline: Keep playing.
+
+KEEP: Score 186 and supply 2, 4, 8 visible behind the scrim. A 5 by 8 board. No second Abandon control competing with the dialog.
+
+DO NOT ADD: gems, a level, a goal bar, crowns, a hammer, undo, pause, a tally of the score, or the words game over, restart, or quit.
