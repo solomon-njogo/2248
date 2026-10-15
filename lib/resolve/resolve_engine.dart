@@ -40,6 +40,8 @@ class ResolveReport {
 class ResolveEngine {
   ResolveEngine({List<int> script = const []}) : _script = List<int>.of(script);
 
+  static const _supply = [2, 4, 8];
+
   final Map<Cell, int> _tiles = {};
   final List<Cell> _chain = [];
   final List<int> _script;
@@ -122,23 +124,6 @@ class ResolveEngine {
     return ResolveReport(rawSum: rawSum, result: result, head: head);
   }
 
-  void _clearCrossed(int result) {
-    final exponent = _exponent(result);
-    if (exponent == null || exponent < 10) return;
-    for (var rung = 10; rung <= exponent; rung++) {
-      final value = 1 << (rung - 9);
-      if (_cleared.contains(value)) continue;
-      _cleared.add(value);
-      final leaving = [
-        for (final entry in _tiles.entries)
-          if (entry.value == value) entry.key,
-      ];
-      for (final cell in leaving) {
-        _tiles.remove(cell);
-      }
-    }
-  }
-
   void _fall() {
     for (var column = 1; column <= 5; column++) {
       final survivors = <int>[];
@@ -166,10 +151,9 @@ class ResolveEngine {
   int _nextFromSupply() {
     while (_scriptCursor < _script.length) {
       final value = _script[_scriptCursor++];
-      if (supply.contains(value)) return value;
+      if (_supply.contains(value)) return value;
     }
-    final values = supply;
-    return values[_random.nextInt(values.length)];
+    return _supply[_random.nextInt(_supply.length)];
   }
 
   bool step(Cell cell) {
@@ -186,7 +170,7 @@ class ResolveEngine {
       final next = <Cell, int>{};
       for (var row = 1; row <= 8; row++) {
         for (var column = 1; column <= 5; column++) {
-          next[Cell(column, row)] = supply[_random.nextInt(supply.length)];
+          next[Cell(column, row)] = _supply[_random.nextInt(_supply.length)];
         }
       }
       _tiles
