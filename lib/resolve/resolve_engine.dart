@@ -38,8 +38,15 @@ class ResolveReport {
 }
 
 class ResolveEngine {
+  ResolveEngine({List<int> script = const []}) : _script = List<int>.of(script);
+
+  static const _supply = [2, 4, 8];
+
   final Map<Cell, int> _tiles = {};
   final List<Cell> _chain = [];
+  final List<int> _script;
+  final Random _random = Random();
+  var _scriptCursor = 0;
   int _score = 0;
 
   int get score => _score;
@@ -98,7 +105,41 @@ class ResolveEngine {
     }
     _chain.clear();
     _score += rawSum;
+    _fall();
+    _refill();
     return ResolveReport(rawSum: rawSum, result: result, head: head);
+  }
+
+  void _fall() {
+    for (var column = 1; column <= 5; column++) {
+      final survivors = <int>[];
+      for (var row = 1; row <= 8; row++) {
+        final tile = _tiles.remove(Cell(column, row));
+        if (tile != null) survivors.add(tile);
+      }
+      final firstRow = 9 - survivors.length;
+      for (var index = 0; index < survivors.length; index++) {
+        _tiles[Cell(column, firstRow + index)] = survivors[index];
+      }
+    }
+  }
+
+  void _refill() {
+    for (var row = 1; row <= 8; row++) {
+      for (var column = 1; column <= 5; column++) {
+        final cell = Cell(column, row);
+        if (_tiles.containsKey(cell)) continue;
+        _tiles[cell] = _nextFromSupply();
+      }
+    }
+  }
+
+  int _nextFromSupply() {
+    while (_scriptCursor < _script.length) {
+      final value = _script[_scriptCursor++];
+      if (_supply.contains(value)) return value;
+    }
+    return _supply[_random.nextInt(_supply.length)];
   }
 
   bool step(Cell cell) {
@@ -111,13 +152,11 @@ class ResolveEngine {
   }
 
   void deal() {
-    final random = Random();
-    const supply = [2, 4, 8];
     do {
       final next = <Cell, int>{};
       for (var row = 1; row <= 8; row++) {
         for (var column = 1; column <= 5; column++) {
-          next[Cell(column, row)] = supply[random.nextInt(supply.length)];
+          next[Cell(column, row)] = _supply[_random.nextInt(_supply.length)];
         }
       }
       _tiles
