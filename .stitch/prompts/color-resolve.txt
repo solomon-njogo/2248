@@ -1,0 +1,5 @@
+Make this Resolve screen much more colorful. 2 is magenta, 4 is cyan, 8 is lime with dark numerals. The background is a vivid indigo-to-plum-to-teal gradient. The score chip and supply tray have a bright magenta-to-cyan rim. Empty cells are deep wells.
+
+The result tile at column 3 row 4 is lemon with dark numerals showing 8. The consumed cells stay empty at column 2 row 3 and column 2 row 4.
+
+Keep wordmark 2248, score 192, supply 2 4 8, readout Sum 6 · Result 8, the footnote about the smallest power of 2, and the text button Abandon. Do not add gems, a level, a goal bar, crowns, or letter suffixes.

@@ -1,0 +1,20 @@
+Mobile portrait screen for 2248, a quiet tabletop puzzle. The player is mid-drag on an open chain. One job: show the board.
+
+PLATFORM: Mobile, portrait
+
+PAGE STRUCTURE:
+1. Header, one row. Left: the wordmark 2248. Right: the label Score and the figure 186. Score is the running total of each resolved chain raw sum.
+2. Supply tray. Label Supply, then exactly three tiles reading 2, 4, and 8. These are the three lowest values this run has not cleared.
+3. Board: exactly 5 columns and 8 rows. Columns 1 to 5 from the left. Rows 1 to 8 from the top. Row 8 is the floor, a heavier band of the same board. Each cell holds at most one tile. Each tile shows only a power-of-two numeral. Fill the cells in this order, row by row:
+Row 1: 2, 4, 2, 8, 4
+Row 2: 4, 2, 8, 2, 2
+Row 3: 8, 4, 2, 4, 8
+Row 4: 2, 8, 4, 2, 4
+Row 5: 4, 2, 2, 8, 2
+Row 6: 2, 4, 8, 4, 2
+Row 7: 8, 2, 4, 2, 8
+Row 8 floor: 4, 2, 8, 4, 2
+4. An open chain drawn as one continuous stroke through cell centers, with one diagonal step. The seed is the pair of 2s at column 1 row 4 and column 2 row 5. The next step is the 4 at column 2 row 6. The head is the 8 at column 3 row 6, marked with a ring. The chain does not repeat a cell. A short readout under the board reads Sum 16.
+5. Footer: a quiet text button labeled Abandon, under the board. Nothing else.
+
+No navigation bar, no tabs, no 4 by 4 board, no swipe arrows, no win banner, no high score, no points, no level. Do not use the words merge, match, restart, or game over.

@@ -1,0 +1,9 @@
+Restyle this Resolve screen to a lively casual phone puzzle on a deep navy field. Keep every number, label, and board position. Change only the look.
+
+LOOK: Full-screen night navy. Tiles are saturated rounded squares with bold white numerals. Color by value: 2 coral, 4 orange, 8 gold, higher powers green, teal, blue, or violet. An 8px gap. Empty cells are darker navy wells. Row 8 is a slightly darker floor band.
+
+RESOLVE: The head at column 3 row 4 shows 8 on a gold tile with dark numerals, marked as the result. The two consumed cells stay empty: column 2 row 3 and column 2 row 4.
+
+KEEP: Wordmark 2248. Score chip 192. Supply tiles 2, 4, and 8. Readout Sum 6 · Result 8. Footnote: The result is the smallest power of 2 at least the sum. Quiet text button Abandon.
+
+DO NOT ADD: gems, a level, a goal bar, crowns, a hammer, undo, pause, a bottom toolbar, or letter suffixes on numbers.

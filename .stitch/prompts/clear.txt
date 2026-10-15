@@ -1,0 +1,20 @@
+Mobile portrait screen for 2248, just after a resolve whose result is 1024. Every tile of value 2 has been cleared. Survivors have not fallen yet. Holes are not refilled yet.
+
+PLATFORM: Mobile, portrait
+
+PAGE STRUCTURE:
+1. Header, one row. Left: the wordmark 2248. Right: the label Score and the figure 4096. Cleared tiles added nothing to the score.
+2. Supply tray. Label Supply, then exactly three tiles reading 4, 8, and 16. The value 2 has left the supply.
+3. Board: exactly 5 columns and 8 rows. Row 8 is the floor. The head, column 3 row 4, shows 1024. Every former 2 is an empty recess. Remaining tiles are only 4 or 8. Fill row by row, using a dot for an empty cell:
+Row 1: ., 4, ., 8, 4
+Row 2: 4, ., 8, ., .
+Row 3: 8, 4, ., 4, 8
+Row 4: ., 8, 1024, ., 4
+Row 5: 4, ., ., 8, .
+Row 6: ., 4, 8, 4, .
+Row 7: 8, ., 4, ., 8
+Row 8 floor: 4, ., 8, 4, .
+4. A footnote under the board reads: 1024 clears every 2. Cleared tiles add nothing to the score.
+5. Footer: a quiet text button labeled Abandon.
+
+No 4 by 4 board, no strike-through on tiles, no win banner, no high score. Do not use the words merge, match, restart, purge, or game over.

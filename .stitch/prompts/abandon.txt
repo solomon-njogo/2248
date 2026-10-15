@@ -1,0 +1,10 @@
+Mobile portrait screen for 2248. The play board is dimmed behind a paper dialog. The player is choosing whether to end the run.
+
+PLATFORM: Mobile, portrait
+
+PAGE STRUCTURE:
+1. Behind the dialog, the same play screen, dimmed: wordmark 2248, Score 186, Supply tiles 2, 4, and 8, and a 5 column by 8 row board of bone tiles. Row 8 is the floor. Do not redraw an open chain.
+2. Dialog, centered, paper surface, hairline border, no glass blur. Title: Abandon this run? Body: The board, the score, and every clear are discarded.
+3. Two stacked buttons. Top, the only filled button: Abandon. Bottom, outline button: Keep playing.
+
+No game-over illustration, no score tally, no restart, no quit, no new game. Do not use the words merge, match, or game over.

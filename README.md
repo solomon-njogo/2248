@@ -1,6 +1,6 @@
 # game_2248
 
-Aether Drift, a neon endless flyer.
+A new Flutter project.
 
 ## Getting Started
 

@@ -1,0 +1,3 @@
+Make this Abandon screen much more colorful. The dimmed board behind the dialog uses magenta 2s, cyan 4s, lime 8s, and clearly different hues for every higher value. The background is a vivid indigo-to-plum-to-teal gradient. The dialog is a rounded deep-plum card. The filled button is magenta with white text reading Abandon. The outline button reads Keep playing.
+
+Keep the title Abandon this run? and the body The board, the score, and every clear are discarded. Keep score 186 and supply 2 4 8. Do not add gems, a level, a goal bar, crowns, or the words game over or restart.

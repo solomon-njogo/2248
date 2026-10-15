@@ -1,0 +1,20 @@
+Mobile portrait screen for 2248, the instant a legal chain resolves. The result has just been written on the head. Holes have not fallen or refilled yet.
+
+PLATFORM: Mobile, portrait
+
+PAGE STRUCTURE:
+1. Header, one row. Left: the wordmark 2248. Right: the label Score and the figure 192. The score rose by the raw sum, 6, not by the result.
+2. Supply tray. Label Supply, then exactly three tiles reading 2, 4, and 8.
+3. Board: exactly 5 columns and 8 rows. Row 8 is the floor. Each occupied cell holds one power-of-two tile. The head, column 3 row 4, shows 8, set apart as the result. The two seed cells are empty recesses: column 2 row 3 and column 2 row 4. Fill the rest, row by row, using a dot for an empty cell:
+Row 1: 2, 4, 2, 8, 4
+Row 2: 4, 2, 8, 2, 2
+Row 3: 8, ., 2, 4, 8
+Row 4: 2, ., 8, 2, 4
+Row 5: 4, 2, 2, 8, 2
+Row 6: 2, 4, 8, 4, 2
+Row 7: 8, 2, 4, 2, 8
+Row 8 floor: 4, 2, 8, 4, 2
+4. A short readout under the board reads Sum 6 · Result 8. A footnote reads: The result is the smallest power of 2 at least the sum.
+5. Footer: a quiet text button labeled Abandon.
+
+No 4 by 4 board, no swipe arrows, no win banner, no high score. Do not use the words merge, match, restart, or game over.

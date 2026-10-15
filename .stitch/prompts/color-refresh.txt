@@ -1,0 +1,3 @@
+Make this Refresh screen much more colorful. 2 is magenta, 4 is cyan, 8 is lime with dark numerals, 512 is mint. The background is a vivid indigo-to-plum-to-teal gradient. The score chip and supply tray have a bright magenta-to-cyan rim. The 512 at column 3 row 4 has no crown.
+
+Keep wordmark 2248, score 2480, the Refresh line that the score stays and one 512 is kept at column 3 row 4, supply 2 4 8, the neighboring pair of 4s on row 1, the full 5 by 8 board, and the text button Abandon. Do not add gems, a level, a goal bar, crowns, or letter suffixes.

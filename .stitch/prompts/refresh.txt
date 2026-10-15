@@ -1,0 +1,20 @@
+Mobile portrait screen for 2248, just after a refresh. The board had no pair, so it was replaced. This is not a resolve. The score is unchanged.
+
+PLATFORM: Mobile, portrait
+
+PAGE STRUCTURE:
+1. Header, one row. Left: the wordmark 2248. Right: the label Score and the figure 2480.
+2. A single line under the header, the label Refresh, then the sentence: The score stays. One 512 is kept at column 3, row 4.
+3. Supply tray. Label Supply, then exactly three tiles reading 2, 4, and 8.
+4. Board: exactly 5 columns and 8 rows, full, no empty cells. Row 8 is the floor. Column 3 row 4 holds 512, the only tile above the supply, with no partner of 512. Every other tile is 2, 4, or 8. A pair of neighboring 4s sits on row 1. Fill row by row:
+Row 1: 2, 4, 4, 8, 2
+Row 2: 4, 2, 8, 2, 2
+Row 3: 8, 4, 2, 4, 8
+Row 4: 2, 8, 512, 2, 4
+Row 5: 4, 2, 2, 8, 2
+Row 6: 2, 4, 8, 4, 2
+Row 7: 8, 2, 4, 2, 8
+Row 8 floor: 4, 2, 8, 4, 2
+5. Footer: a quiet text button labeled Abandon. No button labeled new game, restart, or shuffle.
+
+No 4 by 4 board, no win banner, no high score. Do not use the words merge, match, restart, rescue, or game over.
