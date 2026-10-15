@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
 
-import 'game/game_page.dart';
-import 'theme/app_theme.dart';
-
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const AetherApp());
+  runApp(const MyApp());
 }
 
-class AetherApp extends StatelessWidget {
-  const AetherApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Aether Drift',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
-      home: const GamePage(),
+      title: 'game_2248',
+      home: const HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Hello World',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+        ),
+      ),
     );
   }
 }

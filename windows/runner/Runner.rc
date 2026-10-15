@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.game2248" "\0"
-            VALUE "FileDescription", "Aether Drift" "\0"
+            VALUE "FileDescription", "game_2248" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "game_2248" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.game2248. All rights reserved." "\0"
             VALUE "OriginalFilename", "game_2248.exe" "\0"
-            VALUE "ProductName", "Aether Drift" "\0"
+            VALUE "ProductName", "game_2248" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
