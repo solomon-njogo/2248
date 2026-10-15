@@ -40,16 +40,27 @@ class ResolveReport {
 class ResolveEngine {
   ResolveEngine({List<int> script = const []}) : _script = List<int>.of(script);
 
-  static const _supply = [2, 4, 8];
-
   final Map<Cell, int> _tiles = {};
   final List<Cell> _chain = [];
   final List<int> _script;
+  final List<int> _cleared = [];
   final Random _random = Random();
   var _scriptCursor = 0;
   int _score = 0;
 
   int get score => _score;
+
+  List<int> get supply {
+    final values = <int>[];
+    var value = 2;
+    while (values.length < 3) {
+      if (!_cleared.contains(value)) values.add(value);
+      value *= 2;
+    }
+    return List.unmodifiable(values);
+  }
+
+  List<int> get cleared => List.unmodifiable(_cleared);
 
   bool place(List<Placement> placements) {
     final next = <Cell, int>{};
@@ -104,10 +115,28 @@ class ResolveEngine {
       }
     }
     _chain.clear();
+    _clearCrossed(result);
     _score += rawSum;
     _fall();
     _refill();
     return ResolveReport(rawSum: rawSum, result: result, head: head);
+  }
+
+  void _clearCrossed(int result) {
+    final exponent = _exponent(result);
+    if (exponent == null || exponent < 10) return;
+    for (var rung = 10; rung <= exponent; rung++) {
+      final value = 1 << (rung - 9);
+      if (_cleared.contains(value)) continue;
+      _cleared.add(value);
+      final leaving = [
+        for (final entry in _tiles.entries)
+          if (entry.value == value) entry.key,
+      ];
+      for (final cell in leaving) {
+        _tiles.remove(cell);
+      }
+    }
   }
 
   void _fall() {
@@ -137,9 +166,10 @@ class ResolveEngine {
   int _nextFromSupply() {
     while (_scriptCursor < _script.length) {
       final value = _script[_scriptCursor++];
-      if (_supply.contains(value)) return value;
+      if (supply.contains(value)) return value;
     }
-    return _supply[_random.nextInt(_supply.length)];
+    final values = supply;
+    return values[_random.nextInt(values.length)];
   }
 
   bool step(Cell cell) {
@@ -156,7 +186,7 @@ class ResolveEngine {
       final next = <Cell, int>{};
       for (var row = 1; row <= 8; row++) {
         for (var column = 1; column <= 5; column++) {
-          next[Cell(column, row)] = _supply[_random.nextInt(_supply.length)];
+          next[Cell(column, row)] = supply[_random.nextInt(supply.length)];
         }
       }
       _tiles
@@ -181,6 +211,17 @@ class ResolveEngine {
 }
 
 bool _isTile(int tile) => tile >= 2 && tile & (tile - 1) == 0;
+
+int? _exponent(int value) {
+  if (value < 2 || value & (value - 1) != 0) return null;
+  var exponent = 0;
+  var power = 1;
+  while (power < value) {
+    power *= 2;
+    exponent++;
+  }
+  return exponent;
+}
 
 int _smallestPowerOfTwoAtLeast(int sum) {
   var power = 1;

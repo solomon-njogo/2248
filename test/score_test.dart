@@ -167,12 +167,14 @@ void main() {
 
   test('a refused seed leaves the score unchanged', () {
     final engine = ResolveEngine();
-    engine.place(_boardWith({
-      const Cell(1, 1): 2,
-      const Cell(2, 1): 2,
-      const Cell(1, 3): 2,
-      const Cell(2, 3): 8,
-    }));
+    engine.place(
+      _boardWith({
+        const Cell(1, 1): 2,
+        const Cell(2, 1): 2,
+        const Cell(1, 3): 2,
+        const Cell(2, 3): 8,
+      }),
+    );
     engine.seed(const Cell(1, 1), const Cell(2, 1));
     engine.resolve();
     expect(engine.score, 4);
@@ -220,12 +222,14 @@ void main() {
     'a new seed that replaces an uncommitted chain leaves the score unchanged',
     () {
       final engine = ResolveEngine();
-      engine.place(_boardWith({
-        const Cell(1, 1): 2,
-        const Cell(2, 1): 2,
-        const Cell(4, 4): 8,
-        const Cell(5, 5): 8,
-      }));
+      engine.place(
+        _boardWith({
+          const Cell(1, 1): 2,
+          const Cell(2, 1): 2,
+          const Cell(4, 4): 8,
+          const Cell(5, 5): 8,
+        }),
+      );
       engine.seed(const Cell(1, 1), const Cell(2, 1));
       engine.resolve();
       expect(engine.score, 4);
