@@ -101,7 +101,35 @@ void main() {
     expect(impacts.mediums, 0);
   });
 
-  test('a second join is its own short pulse', () {
+  test('a step in an Android browser stays quiet', () {
+    final motor = MotorRecorder();
+    final impacts = ImpactRecorder();
+    PlatformCues(
+      motor: motor,
+      impacts: impacts,
+      platform: TargetPlatform.android,
+      web: true,
+    ).play(const Cue.step(60, tone: false));
+
+    expect(motor.pulses, isEmpty);
+    expect(impacts.lights, 0);
+    expect(impacts.mediums, 0);
+  });
+
+  test('a step in an iPhone browser stays quiet', () {
+    final impacts = ImpactRecorder();
+    PlatformCues(
+      motor: MotorRecorder(),
+      impacts: impacts,
+      platform: TargetPlatform.iOS,
+      web: true,
+    ).play(const Cue.step(60, tone: false));
+
+    expect(impacts.lights, 0);
+    expect(impacts.mediums, 0);
+  });
+
+  test('a second step is its own short pulse', () {
     final motor = MotorRecorder();
     final cues = PlatformCues(
       motor: motor,

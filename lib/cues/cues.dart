@@ -132,26 +132,29 @@ class PlatformCues implements Cues {
     Motor? motor,
     Impacts? impacts,
     TargetPlatform? platform,
+    bool? web,
     AudioPlayer? player,
   }) : _motor = motor ?? const ChannelMotor(),
        _impacts = impacts ?? const FlutterImpacts(),
        _platform = platform ?? defaultTargetPlatform,
+       _web = web ?? kIsWeb,
        _player = player;
 
   final Motor _motor;
   final Impacts _impacts;
   final TargetPlatform _platform;
+  final bool _web;
   AudioPlayer? _player;
 
   @override
   void play(Cue cue) {
-    if (cue.haptic && _platform == TargetPlatform.android) {
+    if (cue.haptic && !_web && _platform == TargetPlatform.android) {
       _motor.pulse(
         cue.kind == CueKind.resolve
             ? const Pulse(80, 255)
             : const Pulse(40, 128),
       );
-    } else if (cue.haptic && _platform == TargetPlatform.iOS) {
+    } else if (cue.haptic && !_web && _platform == TargetPlatform.iOS) {
       if (cue.kind == CueKind.resolve) {
         _impacts.medium();
       } else {
