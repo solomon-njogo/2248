@@ -334,8 +334,7 @@ void main() {
     expect(report?.rawSum, 4);
     expect(report?.result, 4);
     expect(report?.head, const Cell(2, 1));
-    expect(engine.tileAt(const Cell(2, 1)), 4);
-    expect(engine.tileAt(const Cell(1, 1)), isNull);
+    expect(engine.tileAt(const Cell(2, 8)), 4);
     expect(engine.tileAt(const Cell(5, 8)), 8);
     expect(engine.chain, isEmpty);
   });
@@ -356,11 +355,8 @@ void main() {
     expect(report?.rawSum, 8);
     expect(report?.result, 8);
     expect(report?.head, const Cell(3, 1));
-    expect(engine.tileAt(const Cell(3, 1)), 8);
-    expect(engine.tileAt(const Cell(1, 1)), isNull);
-    expect(engine.tileAt(const Cell(2, 1)), isNull);
-    expect(engine.tileAt(const Cell(4, 1)), isNull);
-    expect(engine.tileAt(const Cell(5, 5)), 32);
+    expect(engine.tileAt(const Cell(3, 8)), 8);
+    expect(engine.tileAt(const Cell(5, 8)), 32);
     expect(engine.chain, isEmpty);
   });
 
@@ -387,48 +383,43 @@ void main() {
     expect(fiveReport?.rawSum, 10);
     expect(fiveReport?.result, 16);
     expect(five.tileAt(const Cell(5, 1)), 16);
-    expect(five.tileAt(const Cell(1, 1)), isNull);
+    expect(five.tileAt(const Cell(1, 1)), isIn([2, 4, 8]));
     expect(five.tileAt(const Cell(1, 2)), 2);
   });
 
-  test(
-    'forty 2s resolve to 128 on the head and leave the other cells empty',
-    () {
-      final engine = ResolveEngine();
-      engine.place(_filled(2));
-      final path = _serpentine();
-      _play(engine, path);
+  test('forty 2s resolve to 128 on the head and the board is full again', () {
+    final engine = ResolveEngine();
+    engine.place(_filled(2));
+    final path = _serpentine();
+    _play(engine, path);
 
-      final report = engine.resolve();
+    final report = engine.resolve();
 
-      expect(report?.rawSum, 80);
-      expect(report?.result, 128);
-      expect(report?.head, const Cell(1, 8));
-      for (final cell in path) {
-        expect(
-          engine.tileAt(cell),
-          cell == path.last ? 128 : isNull,
-          reason: 'column ${cell.column}, row ${cell.row}',
-        );
-      }
-      expect(engine.chain, isEmpty);
-    },
-  );
+    expect(report?.rawSum, 80);
+    expect(report?.result, 128);
+    expect(report?.head, const Cell(1, 8));
+    for (final cell in path) {
+      expect(
+        engine.tileAt(cell),
+        cell == path.last ? 128 : isIn([2, 4, 8]),
+        reason: 'column ${cell.column}, row ${cell.row}',
+      );
+    }
+    expect(engine.chain, isEmpty);
+  });
 
   test('the same tiles write the result on whichever cell is the head', () {
     final ontoSecond = ResolveEngine();
     ontoSecond.place(const [Placement(1, 1, 2), Placement(1, 2, 2)]);
     ontoSecond.seed(const Cell(1, 1), const Cell(1, 2));
     expect(ontoSecond.resolve()?.head, const Cell(1, 2));
-    expect(ontoSecond.tileAt(const Cell(1, 2)), 4);
-    expect(ontoSecond.tileAt(const Cell(1, 1)), isNull);
+    expect(ontoSecond.tileAt(const Cell(1, 8)), 4);
 
     final ontoFirst = ResolveEngine();
     ontoFirst.place(const [Placement(1, 1, 2), Placement(1, 2, 2)]);
     ontoFirst.seed(const Cell(1, 2), const Cell(1, 1));
     expect(ontoFirst.resolve()?.head, const Cell(1, 1));
-    expect(ontoFirst.tileAt(const Cell(1, 1)), 4);
-    expect(ontoFirst.tileAt(const Cell(1, 2)), isNull);
+    expect(ontoFirst.tileAt(const Cell(1, 8)), 4);
   });
 
   test('a resolve with no open chain reports nothing and changes nothing', () {
@@ -462,18 +453,16 @@ void main() {
         Cell(5, 1),
       ]);
       expect(engine.resolve()?.result, 16);
-      expect(engine.tileAt(const Cell(1, 1)), isNull);
-      expect(engine.tileAt(const Cell(2, 1)), isNull);
+      expect(engine.tileAt(const Cell(5, 1)), 16);
+      expect(engine.tileAt(const Cell(1, 2)), 2);
 
       expect(engine.seed(const Cell(4, 2), const Cell(5, 2)), isTrue);
       expect(engine.step(const Cell(5, 1)), isTrue);
       final report = engine.resolve();
       expect(report?.rawSum, 20);
       expect(report?.result, 32);
-      expect(engine.tileAt(const Cell(5, 1)), 32);
-      expect(engine.tileAt(const Cell(4, 2)), isNull);
-      expect(engine.tileAt(const Cell(5, 2)), isNull);
-      expect(engine.tileAt(const Cell(1, 1)), isNull);
+      expect(report?.head, const Cell(5, 1));
+      expect(engine.tileAt(const Cell(5, 2)), 32);
       expect(engine.chain, isEmpty);
     },
   );
