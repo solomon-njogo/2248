@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 part '../run/run_store.dart';
@@ -27,16 +28,81 @@ class Placement {
   final int? tile;
 }
 
+class ClearedTile {
+  const ClearedTile(this.cell, this.tile);
+
+  final Cell cell;
+  final int tile;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ClearedTile && other.cell == cell && other.tile == tile;
+
+  @override
+  int get hashCode => Object.hash(cell, tile);
+
+  @override
+  String toString() => 'ClearedTile($cell, $tile)';
+}
+
+class SurvivorFall {
+  const SurvivorFall(this.from, this.to, this.tile);
+
+  final Cell from;
+  final Cell to;
+  final int tile;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SurvivorFall &&
+      other.from == from &&
+      other.to == to &&
+      other.tile == tile;
+
+  @override
+  int get hashCode => Object.hash(from, to, tile);
+
+  @override
+  String toString() => 'SurvivorFall($from -> $to, $tile)';
+}
+
+class RefilledTile {
+  const RefilledTile(this.cell, this.tile);
+
+  final Cell cell;
+  final int tile;
+
+  @override
+  bool operator ==(Object other) =>
+      other is RefilledTile && other.cell == cell && other.tile == tile;
+
+  @override
+  int get hashCode => Object.hash(cell, tile);
+
+  @override
+  String toString() => 'RefilledTile($cell, $tile)';
+}
+
 class ResolveReport {
   const ResolveReport({
     required this.rawSum,
     required this.result,
     required this.head,
+    required this.gathered,
+    required this.leaving,
+    required this.falls,
+    required this.refilled,
+    required this.refreshed,
   });
 
   final int rawSum;
   final int result;
   final Cell head;
+  final List<Cell> gathered;
+  final List<ClearedTile> leaving;
+  final List<SurvivorFall> falls;
+  final List<RefilledTile> refilled;
+  final List<Placement>? refreshed;
 }
 
 class ResolveEngine {
@@ -87,6 +153,11 @@ class ResolveEngine {
 
   List<Cell> get chain => List.unmodifiable(_chain);
 
+  int? get pendingResult {
+    if (_chain.isEmpty) return null;
+    return _smallestPowerOfTwoAtLeast(_rawSum(_chain));
+  }
+
   bool seed(Cell start, Cell head) {
     final startTile = _tiles[start];
     final headTile = _tiles[head];
@@ -103,12 +174,13 @@ class ResolveEngine {
 
   ResolveReport? resolve() {
     if (_chain.isEmpty) return null;
-    var rawSum = 0;
-    for (final cell in _chain) {
-      rawSum += _tiles[cell]!;
-    }
+    final rawSum = _rawSum(_chain);
     final result = _smallestPowerOfTwoAtLeast(rawSum);
     final head = _chain.last;
+    final gathered = [
+      for (final cell in _chain)
+        if (cell != head) cell,
+    ];
     for (final cell in _chain) {
       if (cell == head) {
         _tiles[cell] = result;
@@ -117,16 +189,25 @@ class ResolveEngine {
       }
     }
     _chain.clear();
-    _clearCrossed(result);
+    final leaving = _clearCrossed(result);
     _score += rawSum;
-    _fall();
-    _refill();
-    _refreshPairless();
-    return ResolveReport(rawSum: rawSum, result: result, head: head);
+    final falls = _fall();
+    final refilled = _refill();
+    final refreshed = _refreshPairless();
+    return ResolveReport(
+      rawSum: rawSum,
+      result: result,
+      head: head,
+      gathered: List.unmodifiable(gathered),
+      leaving: List.unmodifiable(leaving),
+      falls: List.unmodifiable(falls),
+      refilled: List.unmodifiable(refilled),
+      refreshed: refreshed,
+    );
   }
 
-  void _refreshPairless() {
-    if (_hasPair()) return;
+  List<Placement>? _refreshPairless() {
+    if (_hasPair()) return null;
     var highest = 0;
     for (final tile in _tiles.values) {
       if (tile > highest) highest = tile;
@@ -142,47 +223,66 @@ class ResolveEngine {
         }
       }
     } while (!_hasPair());
+    return [
+      for (var row = 1; row <= 8; row++)
+        for (var column = 1; column <= 5; column++)
+          Placement(column, row, _tiles[Cell(column, row)]),
+    ];
   }
 
-  void _clearCrossed(int result) {
+  List<ClearedTile> _clearCrossed(int result) {
+    final leaving = <ClearedTile>[];
     final exponent = _exponent(result);
-    if (exponent == null || exponent < 10) return;
+    if (exponent == null || exponent < 10) return leaving;
     for (var rung = 10; rung <= exponent; rung++) {
       final value = 1 << (rung - 9);
       if (_cleared.contains(value)) continue;
       _cleared.add(value);
-      final leaving = [
-        for (final entry in _tiles.entries)
-          if (entry.value == value) entry.key,
-      ];
-      for (final cell in leaving) {
-        _tiles.remove(cell);
+      for (var row = 1; row <= 8; row++) {
+        for (var column = 1; column <= 5; column++) {
+          final cell = Cell(column, row);
+          if (_tiles[cell] != value) continue;
+          leaving.add(ClearedTile(cell, value));
+          _tiles.remove(cell);
+        }
       }
     }
+    return leaving;
   }
 
-  void _fall() {
+  List<SurvivorFall> _fall() {
+    final falls = <SurvivorFall>[];
     for (var column = 1; column <= 5; column++) {
-      final survivors = <int>[];
+      final survivors = <(Cell, int)>[];
       for (var row = 1; row <= 8; row++) {
-        final tile = _tiles.remove(Cell(column, row));
-        if (tile != null) survivors.add(tile);
+        final cell = Cell(column, row);
+        final tile = _tiles.remove(cell);
+        if (tile != null) survivors.add((cell, tile));
       }
       final firstRow = 9 - survivors.length;
       for (var index = 0; index < survivors.length; index++) {
-        _tiles[Cell(column, firstRow + index)] = survivors[index];
+        final from = survivors[index].$1;
+        final tile = survivors[index].$2;
+        final to = Cell(column, firstRow + index);
+        _tiles[to] = tile;
+        if (from != to) falls.add(SurvivorFall(from, to, tile));
       }
     }
+    return falls;
   }
 
-  void _refill() {
+  List<RefilledTile> _refill() {
+    final refilled = <RefilledTile>[];
     for (var row = 1; row <= 8; row++) {
       for (var column = 1; column <= 5; column++) {
         final cell = Cell(column, row);
         if (_tiles.containsKey(cell)) continue;
-        _tiles[cell] = _nextFromSupply();
+        final tile = _nextFromSupply();
+        _tiles[cell] = tile;
+        refilled.add(RefilledTile(cell, tile));
       }
     }
+    return refilled;
   }
 
   int _nextFromSupply() {
@@ -196,6 +296,11 @@ class ResolveEngine {
 
   bool step(Cell cell) {
     if (_chain.isEmpty) return false;
+    if (_chain.length >= 2 && cell == _chain[_chain.length - 2]) {
+      _chain.removeLast();
+      if (_chain.length < 2) _chain.clear();
+      return true;
+    }
     if (!_tiles.containsKey(cell)) return false;
     if (_chain.contains(cell)) return false;
     if (!_neighbors(_chain.last, cell)) return false;
@@ -222,6 +327,14 @@ class ResolveEngine {
         ..addAll(next);
     } while (!_hasPair());
     _chain.clear();
+  }
+
+  int _rawSum(List<Cell> cells) {
+    var sum = 0;
+    for (final cell in cells) {
+      sum += _tiles[cell]!;
+    }
+    return sum;
   }
 
   bool _hasPair() {

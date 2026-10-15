@@ -274,22 +274,47 @@ void main() {
     expect(_snapshot(engine), before);
   });
 
-  test('a step onto a cell already in the chain is refused', () {
-    final engine = ResolveEngine();
-    engine.place(_filled(2));
-    engine.seed(const Cell(1, 1), const Cell(2, 1));
-    final beforeSeedStep = _snapshot(engine);
+  test(
+    'a step onto the previous cell retracts and an earlier cell is refused',
+    () {
+      final engine = ResolveEngine();
+      engine.place(_filled(2));
+      expect(engine.pendingResult, isNull);
+      engine.seed(const Cell(1, 1), const Cell(2, 1));
+      expect(engine.step(const Cell(3, 1)), isTrue);
+      expect(engine.step(const Cell(4, 1)), isTrue);
+      expect(engine.pendingResult, 8);
+      final before = _snapshot(engine);
 
-    expect(engine.step(const Cell(1, 1)), isFalse);
-    expect(engine.chain, const [Cell(1, 1), Cell(2, 1)]);
-    expect(_snapshot(engine), beforeSeedStep);
+      expect(engine.step(const Cell(1, 1)), isFalse);
+      expect(engine.step(const Cell(2, 1)), isFalse);
+      expect(engine.chain, const [
+        Cell(1, 1),
+        Cell(2, 1),
+        Cell(3, 1),
+        Cell(4, 1),
+      ]);
+      expect(engine.pendingResult, 8);
+      expect(_snapshot(engine), before);
+      expect(engine.score, 0);
 
-    expect(engine.step(const Cell(3, 1)), isTrue);
-    final beforeRepeat = _snapshot(engine);
-    expect(engine.step(const Cell(2, 1)), isFalse);
-    expect(engine.chain, const [Cell(1, 1), Cell(2, 1), Cell(3, 1)]);
-    expect(_snapshot(engine), beforeRepeat);
-  });
+      expect(engine.step(const Cell(3, 1)), isTrue);
+      expect(engine.chain, const [Cell(1, 1), Cell(2, 1), Cell(3, 1)]);
+      expect(engine.pendingResult, 8);
+      expect(engine.score, 0);
+
+      expect(engine.step(const Cell(2, 1)), isTrue);
+      expect(engine.chain, const [Cell(1, 1), Cell(2, 1)]);
+      expect(engine.pendingResult, 4);
+
+      expect(engine.step(const Cell(1, 1)), isTrue);
+      expect(engine.chain, isEmpty);
+      expect(engine.pendingResult, isNull);
+      expect(engine.score, 0);
+      expect(engine.resolve(), isNull);
+      expect(_snapshot(engine), before);
+    },
+  );
 
   test('a step onto an empty cell or off the board is refused', () {
     final engine = ResolveEngine();
@@ -467,6 +492,114 @@ void main() {
     },
   );
 
+  test('an open chain of three 2s has a pending result of 8', () {
+    final engine = ResolveEngine();
+    engine.place(_filled(2));
+    expect(engine.pendingResult, isNull);
+
+    _play(engine, const [Cell(1, 1), Cell(2, 1), Cell(3, 1)]);
+
+    expect(engine.pendingResult, 8);
+    expect(engine.score, 0);
+    expect(engine.tileAt(const Cell(3, 1)), 2);
+  });
+
+  test('a resolve reports the cells that travel, leave, fall, and refill', () {
+    final engine = ResolveEngine(script: const [4, 8, 16]);
+    engine.place(
+      _placed(const [
+        '512 512 2 2 16',
+        '16 16 16 16 16',
+        '16 16 16 16 16',
+        '16 16 16 16 16',
+        '16 16 16 16 16',
+        '16 16 16 16 16',
+        '16 16 16 16 16',
+        '16 16 16 16 16',
+      ]),
+    );
+    engine.seed(const Cell(1, 1), const Cell(2, 1));
+    expect(engine.pendingResult, 1024);
+
+    final report = engine.resolve();
+
+    expect(report?.rawSum, 1024);
+    expect(report?.result, 1024);
+    expect(report?.head, const Cell(2, 1));
+    expect(report?.gathered, const [Cell(1, 1)]);
+    expect(report?.leaving, const [
+      ClearedTile(Cell(3, 1), 2),
+      ClearedTile(Cell(4, 1), 2),
+    ]);
+    expect(report?.falls, isEmpty);
+    expect(report?.refilled, const [
+      RefilledTile(Cell(1, 1), 4),
+      RefilledTile(Cell(3, 1), 8),
+      RefilledTile(Cell(4, 1), 16),
+    ]);
+    expect(report?.refreshed, isNull);
+    expect(engine.tileAt(const Cell(2, 1)), 1024);
+    expect(engine.tileAt(const Cell(1, 1)), 4);
+  });
+
+  test('a resolve reports each survivor fall before the refill', () {
+    final engine = ResolveEngine(script: const [8, 4]);
+    engine.place(
+      _placed(const [
+        '2 4 4 4 4',
+        '2 4 4 4 4',
+        '. 4 4 4 4',
+        '4 4 4 4 4',
+        '4 4 4 4 4',
+        '4 4 4 4 4',
+        '4 4 4 4 4',
+        '4 4 4 4 4',
+      ]),
+    );
+    engine.seed(const Cell(1, 1), const Cell(1, 2));
+
+    final report = engine.resolve();
+
+    expect(report?.rawSum, 4);
+    expect(report?.result, 4);
+    expect(report?.head, const Cell(1, 2));
+    expect(report?.gathered, const [Cell(1, 1)]);
+    expect(report?.leaving, isEmpty);
+    expect(report?.falls, const [SurvivorFall(Cell(1, 2), Cell(1, 3), 4)]);
+    expect(report?.refilled, const [
+      RefilledTile(Cell(1, 1), 8),
+      RefilledTile(Cell(1, 2), 4),
+    ]);
+    expect(report?.refreshed, isNull);
+    expect(engine.tileAt(const Cell(1, 3)), 4);
+    expect(engine.tileAt(const Cell(1, 1)), 8);
+    expect(engine.tileAt(const Cell(1, 2)), 4);
+  });
+
+  test('a pairless resolve reports the board after the refresh', () {
+    final engine = ResolveEngine(
+      script: [8, ...List.filled(39, 2), ...List.filled(39, 4)],
+    );
+    engine.place(_strictHighest());
+    engine.seed(const Cell(1, 1), const Cell(2, 1));
+
+    final report = engine.resolve();
+
+    expect(report?.refreshed, isNotNull);
+    expect(report!.refreshed, hasLength(40));
+    for (final placement in report.refreshed!) {
+      final tile = placement.column == 3 && placement.row == 4
+          ? 2199023255552
+          : 2;
+      expect(
+        placement.tile,
+        tile,
+        reason: 'column ${placement.column}, row ${placement.row}',
+      );
+    }
+    expect(engine.score, 4);
+  });
+
   test('two equal tiles separated by an empty cell are refused as a seed', () {
     final engine = ResolveEngine();
     engine.place(const [Placement(1, 1, 4), Placement(1, 3, 4)]);
@@ -515,6 +648,34 @@ bool _seedsAPair(ResolveEngine engine) {
     }
   }
   return false;
+}
+
+List<Placement> _strictHighest() {
+  var power = 16;
+  final placements = <Placement>[];
+  for (var row = 1; row <= 8; row++) {
+    for (var column = 1; column <= 5; column++) {
+      if (row == 1 && (column == 1 || column == 2)) {
+        placements.add(Placement(column, row, 2));
+      } else {
+        placements.add(Placement(column, row, power));
+        power *= 2;
+      }
+    }
+  }
+  return placements;
+}
+
+List<Placement> _placed(List<String> rows) {
+  final placements = <Placement>[];
+  for (var row = 0; row < rows.length; row++) {
+    final tokens = rows[row].split(' ');
+    for (var column = 0; column < tokens.length; column++) {
+      if (tokens[column] == '.') continue;
+      placements.add(Placement(column + 1, row + 1, int.parse(tokens[column])));
+    }
+  }
+  return placements;
 }
 
 int _seedTargets(ResolveEngine engine, Cell origin) {
