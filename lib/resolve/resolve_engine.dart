@@ -201,6 +201,12 @@ class ResolveEngine {
     return true;
   }
 
+  void abandon() {
+    _score = 0;
+    _cleared.clear();
+    deal();
+  }
+
   void deal() {
     do {
       final next = <Cell, int>{};
