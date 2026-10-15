@@ -1,5 +1,7 @@
 import 'dart:math';
 
+part '../run/run_store.dart';
+
 class Cell {
   const Cell(this.column, this.row);
 
