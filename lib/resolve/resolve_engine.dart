@@ -44,9 +44,9 @@ class ResolveEngine {
 
   final Map<Cell, int> _tiles = {};
   final List<Cell> _chain = [];
-  final List<int> _script;
-  final Random _random = Random();
-  var _scriptCursor = 0;
+  int _score = 0;
+
+  int get score => _score;
 
   bool place(List<Placement> placements) {
     final next = <Cell, int>{};
@@ -101,8 +101,7 @@ class ResolveEngine {
       }
     }
     _chain.clear();
-    _fall();
-    _refill();
+    _score += rawSum;
     return ResolveReport(rawSum: rawSum, result: result, head: head);
   }
 
